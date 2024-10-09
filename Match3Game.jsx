@@ -1,11 +1,10 @@
+///////////////////////////////////////////////////////////////////////////////////
+/*The 'Match 3 Game' emulates the mechanics of a match-3 game within After Effects.
+It uses the out point of a layer as the in point to start the falling animation.*/
+///////////////////////////////////////////////////////////////////////////////////
 
 
-//UX starts setup
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-
-// DIALOG
-// ======
+//Starting dialog boxes to take the data from the inputs
 var dialog = new Window("dialog"); 
     dialog.text = "Select grid size"; 
     dialog.orientation = "row"; 
@@ -22,7 +21,6 @@ var gridSetup = dialog.add("panel", undefined, undefined, {name: "gridSetup", bo
 	gridSetup.margins = 10; 
 
 // Columns group
-// ======
 var columnsGroup = gridSetup.add("group", undefined, {name: "columnsGroup"}); 
 	columnsGroup.orientation = "row"; 
 	columnsGroup.alignChildren = ["left","center"]; 
@@ -38,8 +36,6 @@ var columnsGroupInput = columnsGroup.add('edittext {properties: {name: "columnsG
 	columnsGroupInput.preferredSize.width = 40; 
 
 // Rows group
-// ======
-
 var rowsGroup = gridSetup.add("group", undefined, {name: "rowGroup"}); 
 	rowsGroup.orientation = "row"; 
 	rowsGroup.alignChildren = ["left","center"]; 
@@ -56,7 +52,6 @@ var rowsGroupInput = rowsGroup.add('edittext {properties: {name: "rowsGroupInput
     rowsGroupInput.alignment = ["left","center"]; 
 
 // Size group
-// ====
 var sizeGroup = gridSetup.add("group", undefined, {name: "sizeGroup"}); 
 	sizeGroup.orientation = "row"; 
 	sizeGroup.alignChildren = ["left","center"]; 
@@ -71,6 +66,11 @@ var sizeGroupInput = sizeGroup.add('edittext {justify: "left", properties: {name
 	sizeGroupInput.text = 100; 
 	sizeGroupInput.preferredSize.width = 40; 
 	sizeGroupInput.alignment = ["left","center"]; 
+
+/*Cascade selection
+var checkbox1 = gridSetup.add("checkbox", undefined, undefined, {name: "checkbox1"}); 
+checkbox1.text = "Cascade"; 
+checkbox1.preferredSize.height = 15;*/
 
 // Comp setup panel
 // ======
