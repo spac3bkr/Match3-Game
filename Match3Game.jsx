@@ -4,139 +4,205 @@ It uses the out point of a layer as the in point to start the falling animation.
 ///////////////////////////////////////////////////////////////////////////////////
 
 
-//Starting dialog boxes to take the data from the inputs
+// DIALOG
+// ======
 var dialog = new Window("dialog"); 
-    dialog.text = "Select grid size"; 
-    dialog.orientation = "row"; 
-    dialog.alignChildren = ["left","top"]; 
+    dialog.text = "The Grid"; 
+    dialog.preferredSize.width = 169; 
+    dialog.preferredSize.height = 265; 
+    dialog.orientation = "column"; 
+    dialog.alignChildren = ["center","top"]; 
     dialog.spacing = 10; 
-    dialog.margins = 17; 
+    dialog.margins = 20; 
 
-// Grid setup panel
-var gridSetup = dialog.add("panel", undefined, undefined, {name: "gridSetup", borderStyle: ""}); 
-	gridSetup.text = "Grid"; 
-	gridSetup.orientation = "column"; 
-	gridSetup.alignChildren = ["left","center"]; 
-	gridSetup.spacing = 13; 
-	gridSetup.margins = 10; 
+// COMPNAMEGROUP
+// =============
+var compNameGroup = dialog.add("group", undefined, {name: "compNameGroup"}); 
+    compNameGroup.preferredSize.width = 251; 
+    compNameGroup.orientation = "row"; 
+    compNameGroup.alignChildren = ["center","fill"]; 
+    compNameGroup.spacing = 13; 
+    compNameGroup.margins = 0; 
 
-// Columns group
-var columnsGroup = gridSetup.add("group", undefined, {name: "columnsGroup"}); 
-	columnsGroup.orientation = "row"; 
-	columnsGroup.alignChildren = ["left","center"]; 
-	columnsGroup.spacing = 0; 
-	columnsGroup.margins = 0; 
+var nameLabel = compNameGroup.add("statictext", undefined, undefined, {name: "nameLabel"}); 
+    nameLabel.text = "Comp Name"; 
+    nameLabel.preferredSize.width = 76; 
+    nameLabel.justify = "right"; 
 
-var columnsGroupLabel = columnsGroup.add("statictext", undefined, undefined, {name: "columnsGroupLabel"}); 
-	columnsGroupLabel.text = "columns"; 
-	columnsGroupLabel.preferredSize.width = 60; 
+var nameInput = compNameGroup.add('edittext {properties: {name: "nameInput"}}'); 
+    nameInput.preferredSize.width = 160; 
+    nameInput.alignment = ["center","fill"]; 
 
-var columnsGroupInput = columnsGroup.add('edittext {properties: {name: "columnsGroupInput"}}'); 
-	columnsGroupInput.text = 5; 
-	columnsGroupInput.preferredSize.width = 40; 
+// GRIDSETUP
+// =========
+var gridSetup = dialog.add("panel", undefined, undefined, {name: "gridSetup", borderStyle: "white"}); 
+    gridSetup.preferredSize.width = 250; 
+    gridSetup.orientation = "row"; 
+    gridSetup.alignChildren = ["left","fill"]; 
+    gridSetup.spacing = 10; 
+    gridSetup.margins = 10; 
+    gridSetup.alignment = ["center","top"]; 
 
-// Rows group
-var rowsGroup = gridSetup.add("group", undefined, {name: "rowGroup"}); 
-	rowsGroup.orientation = "row"; 
-	rowsGroup.alignChildren = ["left","center"]; 
-	rowsGroup.spacing = 0; 
-	rowsGroup.margins = 0; 
+// GRIDSETUPGROUP
+// ==============
+var gridSetupGroup = gridSetup.add("group", undefined, {name: "gridSetupGroup"}); 
+    gridSetupGroup.preferredSize.width = 144; 
+    gridSetupGroup.orientation = "column"; 
+    gridSetupGroup.alignChildren = ["left","center"]; 
+    gridSetupGroup.spacing = 10; 
+    gridSetupGroup.margins = 0; 
+    gridSetupGroup.alignment = ["left","top"]; 
 
-var rowsGroupLabel = rowsGroup.add("statictext", undefined, undefined, {name: "rowsGroupLabel"}); 
-    rowsGroupLabel.text = "Rows"; 
-    rowsGroupLabel.preferredSize.width = 60; 
+// COLUMNSGROUP
+// ============
+var columnsGroup = gridSetupGroup.add("group", undefined, {name: "columnsGroup"}); 
+    columnsGroup.orientation = "row"; 
+    columnsGroup.alignChildren = ["left","fill"]; 
+    columnsGroup.spacing = 10; 
+    columnsGroup.margins = 0; 
+    columnsGroup.alignment = ["fill","center"]; 
 
-var rowsGroupInput = rowsGroup.add('edittext {properties: {name: "rowsGroupInput"}}'); 
-    rowsGroupInput.text = 5; 
-    rowsGroupInput.preferredSize.width = 40; 
-    rowsGroupInput.alignment = ["left","center"]; 
+var columnsLabel = columnsGroup.add("statictext", undefined, undefined, {name: "columnsLabel"}); 
+    columnsLabel.text = "Colums"; 
+    columnsLabel.preferredSize.width = 75; 
+    columnsLabel.justify = "right"; 
 
-// Size group
-var sizeGroup = gridSetup.add("group", undefined, {name: "sizeGroup"}); 
-	sizeGroup.orientation = "row"; 
-	sizeGroup.alignChildren = ["left","center"]; 
-	sizeGroup.spacing = 0; 
-	sizeGroup.margins = 0; 
+var columnsInput = columnsGroup.add('edittext {properties: {name: "columnsInput" , enterKeySignalsOnChange: true}}'); 
+    columnsInput.text = "5";
+    columnsInput.onChanging = function(){newResolution(columnsInput.text , rowsInput.text , sizeInput.text)};
+    columnsInput.preferredSize.width = 50; 
+    
 
-var sizeGroupLabel = sizeGroup.add("statictext", undefined, undefined, {name: "sizeGroupLabel"}); 
-	sizeGroupLabel.text = "Tile size"; 
-	sizeGroupLabel.preferredSize.width = 60; 
+// ROWSGROUP
+// =========
+var rowsGroup = gridSetupGroup.add("group", undefined, {name: "rowsGroup"}); 
+    rowsGroup.orientation = "row"; 
+    rowsGroup.alignChildren = ["left","center"]; 
+    rowsGroup.spacing = 10; 
+    rowsGroup.margins = 0; 
+    rowsGroup.alignment = ["left","center"]; 
 
-var sizeGroupInput = sizeGroup.add('edittext {justify: "left", properties: {name: "sizeGroupInput"}}'); 
-	sizeGroupInput.text = 100; 
-	sizeGroupInput.preferredSize.width = 40; 
-	sizeGroupInput.alignment = ["left","center"]; 
+var rowsLabel = rowsGroup.add("statictext", undefined, undefined, {name: "rowsLabel"}); 
+    rowsLabel.text = "Rows"; 
+    rowsLabel.preferredSize.width = 75; 
+    rowsLabel.justify = "right"; 
 
-/*Cascade selection
-var checkbox1 = gridSetup.add("checkbox", undefined, undefined, {name: "checkbox1"}); 
-checkbox1.text = "Cascade"; 
-checkbox1.preferredSize.height = 15;*/
+var rowsInput = rowsGroup.add('edittext {properties: {name: "rowsInput" , enterKeySignalsOnChange: true}}'); 
+    rowsInput.text = "5"; 
+    rowsInput.onChanging = function(){newResolution(columnsInput.text , rowsInput.text , sizeInput.text)};
+    rowsInput.preferredSize.width = 50; 
 
-// Comp setup panel
-// ======
-var compSetup = dialog.add("panel", undefined, undefined, {name: "compSetup"}); 
-    compSetup.text = "Composition"; 
-    compSetup.orientation = "column"; 
-    compSetup.alignChildren = ["left","top"]; 
-    compSetup.spacing = 10; 
-    compSetup.margins = 10; 
+// SIZEGROUP
+// =========
+var sizeGroup = gridSetupGroup.add("group", undefined, {name: "sizeGroup"}); 
+    sizeGroup.orientation = "row"; 
+    sizeGroup.alignChildren = ["left","center"]; 
+    sizeGroup.spacing = 10; 
+    sizeGroup.margins = 0; 
+    sizeGroup.alignment = ["left","center"]; 
 
-// Frame rate group
-// ======
-var frameRateGroup = compSetup.add("group", undefined, {name: "frameRateGroup"}); 
+var sizeLabel = sizeGroup.add("statictext", undefined, undefined, {name: "sizeLabel"}); 
+    sizeLabel.text = "Tile Size"; 
+    sizeLabel.preferredSize.width = 75; 
+    sizeLabel.justify = "right"; 
+
+var sizeInput = sizeGroup.add('edittext {properties: {name: "sizeInput"}}'); 
+    sizeInput.text = "50"; 
+    sizeInput.onChanging = function(){newResolution(columnsInput.text , rowsInput.text , sizeInput.text)};
+    sizeInput.preferredSize.width = 50;
+
+// RESOLUTIONGROUP
+// ===============
+var resolutionGroup = gridSetup.add("group", undefined, {name: "resolutionGroup"}); 
+    resolutionGroup.enabled = false; 
+    resolutionGroup.orientation = "row"; 
+    resolutionGroup.alignChildren = ["left","center"]; 
+    resolutionGroup.spacing = 0; 
+    resolutionGroup.margins = 0; 
+
+var resolutionLabel = resolutionGroup.add("statictext", undefined, undefined, {name: "resolutionLabel"}); 
+    resolutionLabel.preferredSize.width = 58; 
+   
+    //Calculates the final resolution;
+    function newResolution(columns , rows , size){
+        resolutionLabel.text = (columns * size) + "x" + (rows * size); 
+    }
+   
+    newResolution(columnsInput.text , rowsInput.text , sizeInput.text);
+    
+
+// COMPSETUPPANEL
+// ==============
+var compSetupPanel = dialog.add("panel", undefined, undefined, {name: "compSetupPanel"}); 
+    compSetupPanel.preferredSize.width = 250; 
+    compSetupPanel.orientation = "column"; 
+    compSetupPanel.alignChildren = ["left","top"]; 
+    compSetupPanel.spacing = 9; 
+    compSetupPanel.margins = 10; 
+
+// DURATIONGROUP
+// =============
+var durationGroup = compSetupPanel.add("group", undefined, {name: "durationGroup"}); 
+    durationGroup.orientation = "row"; 
+    durationGroup.alignChildren = ["right","fill"]; 
+    durationGroup.spacing = 10; 
+    durationGroup.margins = 0; 
+
+var durationLabel = durationGroup.add("statictext", undefined, undefined, {name: "durationLabel"}); 
+    durationLabel.text = "Duration"; 
+    durationLabel.preferredSize.width = 75; 
+    durationLabel.justify = "right"; 
+
+var durationInput = durationGroup.add('edittext {properties: {name: "durationInput"}}'); 
+    durationInput.text = "30"; 
+    durationInput.preferredSize.width = 50; 
+    durationInput.alignment = ["right","center"]; 
+
+// FRAMERATEGROUP
+// ==============
+var frameRateGroup = compSetupPanel.add("group", undefined, {name: "frameRateGroup"}); 
     frameRateGroup.orientation = "row"; 
-    frameRateGroup.alignChildren = ["left","center"]; 
+    frameRateGroup.alignChildren = ["left","fill"]; 
     frameRateGroup.spacing = 10; 
     frameRateGroup.margins = 0; 
 
-var frameRateGroupLabel = frameRateGroup.add("statictext", undefined, undefined, {name: "frameRateLabel"}); 
-	frameRateGroupLabel.text = "Frame rate"; 
-	frameRateGroupLabel.preferredSize.width = 70; 
+var frameRateLabel = frameRateGroup.add("statictext", undefined, undefined, {name: "frameRateLabel"}); 
+    frameRateLabel.text = "Frame Rate"; 
+    frameRateLabel.preferredSize.width = 75; 
+    frameRateLabel.justify = "right"; 
 
-var frameRateGroupInput = frameRateGroup.add('edittext {properties: {name: "frameRateInput"}}'); 
-	frameRateGroupInput.text = 60; 	
-	frameRateGroupInput.preferredSize.width = 40; 
+var frameRateInput = frameRateGroup.add('edittext {properties: {name: "frameRateInput"}}'); 
+    frameRateInput.text = "30"; 
+    frameRateInput.preferredSize.width = 50; 
 
-// Duration group
-// ======
-var durationGroup = compSetup.add("group", undefined, {name: "durationGroup"}); 
-	durationGroup.orientation = "row"; 
-	durationGroup.alignChildren = ["left","center"]; 
-	durationGroup.spacing = 10; 
-	durationGroup.margins = 0; 
+// BUTTONS
+// =======
+var buttons = dialog.add("group", undefined, {name: "buttons"}); 
+    buttons.preferredSize.width = 100; 
+    buttons.orientation = "row"; 
+    buttons.alignChildren = ["center","center"]; 
+    buttons.spacing = 16; 
+    buttons.margins = [0,10,0,0]; 
+    buttons.alignment = ["right","top"]; 
 
-var durationGroupLabel = durationGroup.add("statictext", undefined, undefined, {name: "durationLabel"}); 
-	durationGroupLabel.text = "Duration(s)"; 
-	durationGroupLabel.preferredSize.width = 70; 
+var ok = buttons.add("button", undefined, undefined, {name: "ok"}); 
+    ok.text = "Accept"; 
+    ok.justify = "right"; 
 
-var durationGroupInput = durationGroup.add('edittext {properties: {name: "durationInput"}}'); 
-	durationGroupInput.text = 30; 
-	durationGroupInput.preferredSize.width = 40; 
-
-// Buttons group
-// ======
-var buttonsSetup = dialog.add("group", undefined, {name: "group5"}); 
-	buttonsSetup.orientation = "column"; 
-	buttonsSetup.alignChildren = ["fill","center"]; 
-	buttonsSetup.spacing = 11; 
-	buttonsSetup.margins = 0; 
-
-var ok = buttonsSetup.add("button", undefined, undefined, {name: "ok"}); 
-    ok.text = "OK"; 
-
-var cancel = buttonsSetup.add("button", undefined, undefined, {name: "cancel"}); 
+var cancel = buttons.add("button", undefined, undefined, {name: "cancel"}); 
     cancel.text = "Cancel"; 
+    cancel.justify = "right"; 
+
 
 //function to check values
 ok.onClick = function() {
 
-	//Validate fields
-
+	//Validate fields and execute the Genesis Function
 	try {
-		gridGenesis(parseInt(rowsGroupInput.text) , parseInt(columnsGroupInput.text) , parseInt(sizeGroupInput.text) , parseInt(durationGroupInput.text) , parseInt(frameRateGroupInput.text));
-	  // This will raise an error
+
+		gridGenesis(nameInput.text , parseInt(columnsInput.text) , parseInt(rowsInput.text) ,  parseInt(sizeInput.text) , parseInt(durationInput.text) , parseInt(frameRateInput.text));
+
 	} catch (e) {
-		// Handle the error here
 		alert(e.message);
 	}
 
@@ -157,14 +223,15 @@ dialog.show();
 /////////////////////////////////////////////////////////////////////
 
 //Start grid function
-function gridGenesis(rows,columns,tileSize,duration,frameRate){
+function gridGenesis(compName , rows , columns , tileSize , duration ,frameRate){
 
 	//Comp size
 	var compHeight = tileSize * rows;
 	var compWidth = tileSize * columns;
 
 	//Main comp creation
-	var grid = app.project.items.addComp("Grid", compWidth, compHeight, 1, duration, frameRate);
+    if ( compName == "" ){ compName = "Your Grid"; }
+	var grid = app.project.items.addComp(compName, compWidth, compHeight, 1, duration, frameRate);
 
 	//Setup tile
 	var tile = app.project.items.addComp("Tile", tileSize, tileSize, 1, duration, frameRate);
