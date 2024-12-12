@@ -223,7 +223,7 @@ dialog.show();
 /////////////////////////////////////////////////////////////////////
 
 //Start grid function
-function gridGenesis(compName , rows , columns , tileSize , duration ,frameRate){
+function gridGenesis(compName , columns , rows , tileSize , duration ,frameRate){
 
 	//Comp size
 	var compHeight = tileSize * rows;
