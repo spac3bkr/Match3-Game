@@ -3,10 +3,13 @@
 It uses the out point of a layer as the in point to start the falling animation.*/
 ///////////////////////////////////////////////////////////////////////////////////
 
+//COMMENTS/////////////////////////////////////////////////////////////////////////
+/*Select if bounces or not*/
+///////////////////////////////////////////////////////////////////////////////////
 
 // DIALOG
 // ======
-var dialog = new Window("dialog"); 
+var dialog = new Window("dialog");
     dialog.text = "The Grid"; 
     dialog.preferredSize.width = 169; 
     dialog.preferredSize.height = 265; 
@@ -203,6 +206,7 @@ ok.onClick = function() {
 		gridGenesis(nameInput.text , parseInt(columnsInput.text) , parseInt(rowsInput.text) ,  parseInt(sizeInput.text) , parseInt(durationInput.text) , parseInt(frameRateInput.text));
 
 	} catch (e) {
+        
 		alert(e.message);
 	}
 
@@ -219,6 +223,7 @@ cancel.onClick = function() {
 }
 
 dialog.show();
+
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 
@@ -258,11 +263,27 @@ function gridGenesis(compName , columns , rows , tileSize , duration ,frameRate)
 	var positionX = tileSize / 2;
 	var positionY = compHeight - (tileSize / 2);
 
+    //Add guides
+    var guideX = positionX;
+    var guideY = positionY;
+    for(guideXIndex = 1 ; guideXIndex <= columns ; guideXIndex++ ){
+        grid.addGuide(1, guideX);
+        guideX += tileSize;
+    }
+    for(guideYIndex = 1 ; guideYIndex <= rows ; guideYIndex++ ){
+        grid.addGuide(2, guideY);
+        guideY -= tileSize;
+    }
+   
+    //grid.addGuide(2, positionY);
+           //positionY -= tileSize;
+
 	var bounce = 0.9;
 	var stepDuration = 0.12;
 
 	//Define main expressions
 	var sliderExpression = "t = time; \n" + "start = outPoint; // Start the animation at the out-point \n" + "stepDuration = " + stepDuration + " // Duration of each step \n" + "if (time > outPoint){\n\n"+ "// Define the total range (0 to " + tileSize + ") split into 3 steps\n" + "step1Start = 0;\n" + "step1End = " + tileSize + "; // First step\n" + "step2Start = " + tileSize + ";\n"+"step2End = (" + tileSize + "*" + bounce + ")" + "; // Second step\n"+"step3Start = (" + tileSize + "*" + bounce + ");\n" + "step3End = " + tileSize + "; // Third step\n"+"// Time ranges for each step\n"+"step1EndTime = start + " + stepDuration + "; // End time for step 1\n"+"step2EndTime = start + 2 * " + stepDuration + "; // End time for step 2\n"+"step3EndTime = start + 3 * " + stepDuration + "; // End time for step 3\n"+"// Animate in steps\n"+"if (t <= step1EndTime) {\n"+"// Step 1: Animate from 0 to " + tileSize + "\n"+"easeIn(t, start, step1EndTime, step1Start, step1End);\n"+"} else if (t <= step2EndTime) {\n"+"// Step 2: Animate from " + tileSize + " to " + (tileSize * 0.9) + "\n"+"easeOut(t, step1EndTime, step2EndTime, step2Start, step2End);\n"+"} else if (t <= step3EndTime) {\n"+"// Step 3: Animate from " + (tileSize*0.9) + " to " + tileSize + "\n"+"easeIn(t, step2EndTime, step3EndTime, step3Start, step3End);\n"+"} else {\n"+"// After the final step, hold the last value " + tileSize + "\n"+"step3End;\n"+"}\n"+"}else{\n"+"0;\n"+"}\n";
+    var scaleExpression = "duration = 0.2; // Duration of scale-down in seconds \n" + "t = outPoint - time; // Time before outPoint \n" + "ease(t, 0, duration, [0, 0], [100, 100]);";
 
 	for (columIndex = 1 ; columIndex <= columns ; columIndex++){
 
@@ -280,10 +301,16 @@ function gridGenesis(compName , columns , rows , tileSize , duration ,frameRate)
 
 		//Position property + expression
 		var layerPosition = layer.property("ADBE Transform Group").property("ADBE Position");
-		layerPosition.expression = "offset = effect('Slider Control')('Slider');\ntransform.position = [" + positionX + "," + positionY + " + offset]";
+		layerPosition.expression = "offset = effect('Slider Control')('Slider');\n" + "transform.position = [" + positionX + "," + positionY + " + offset]";
+
+        //Scale property + expression
+		var layerScale = layer.property("ADBE Transform Group").property("ADBE Scale");
+		layerScale.expression = scaleExpression;
+
+ 
 
 		//CHANGE LABEL COLOR STARTING COLUM
-		while(	rowIndex  < rows){
+		while(	rowIndex < rows){
 			
 			//Next alement above the last oone
 			var layer = grid.layers.add(tile);
@@ -297,9 +324,13 @@ function gridGenesis(compName , columns , rows , tileSize , duration ,frameRate)
 			//Position property + expression
 			var layerPosition = layer.property("ADBE Transform Group").property("ADBE Position");
 			layerPosition.expression = "offset = effect('Slider Control')('Slider')\n" + "if(time > outPoint){" + "delay=0" + "}else{" + "delay = thisComp.layer('CTRL').effect('Delay')('Slider')//DEFINIR AL CAPA DE CTRL\n" + "}" + "currentPosition = thisComp.layer(index+1).transform.position.valueAtTime(time - delay)\n" + "transform.position = [" + positionX + " , currentPosition[1] - (" + tileSize + " - offset)]\n";
+            //layerPosition.expression = "offset = effect('Slider Control')('Slider')\n" + "if(time > outPoint){" + "delay=0" + "}else{" + "delay = 0.1//DEFINIR AL CAPA DE CTRL\n" + "}" + "currentPosition = thisComp.layer(index+1).transform.position.valueAtTime(time - delay)\n" + "transform.position = [" + positionX + " , currentPosition[1] - (" + tileSize + " - offset)]\n";
 
+            //Scale property + expression
+		    var layerScale = layer.property("ADBE Transform Group").property("ADBE Scale");
+		    layerScale.expression = scaleExpression;
+        
 			rowIndex++;
-
 		}
 
 		//XPosition for the next element
@@ -325,6 +356,7 @@ function gridGenesis(compName , columns , rows , tileSize , duration ,frameRate)
 	//Open the grid
 	var viewer = grid.openInViewer();
 	viewer.setActive();
+
 }
 
 
